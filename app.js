@@ -187,7 +187,11 @@ function declencherAlerteVocale() {
         calculer();
     }, 500);
 }
-
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && active && wakeLock === null) {
+        requestWakeLock();
+    }
+});
 
 window.onload = () => {
     calculer();
