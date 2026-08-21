@@ -1,12 +1,12 @@
-# 🌱 BastaWatts — L'Assistant de Cuisson Passive & Éco-Responsable
+# 🌱 PastaWatts — L'Assistant de Cuisson Passive & Éco-Responsable
 
-**BastaWatts** est une application web ultra-légère conçue pour optimiser la cuisson des pâtes, du riz et des céréales sur plaque à induction en utilisant les lois de la thermodynamique et de la biochimie alimentaire. 
+**PastaWatts** est une application web ultra-légère conçue pour optimiser la cuisson des pâtes, du riz et des céréales sur plaque à induction en utilisant les lois de la thermodynamique et de la biochimie alimentaire. 
 
 L'objectif : **diviser par deux la consommation d'énergie en cuisine tout en garantissant une qualité nutritionnelle maximale (Index Glycémique bas).**
 
 ---
 
-## 🔬 La Science derrière BastaWatts
+## 🔬 La Science derrière PastaWatts
 
 La cuisson conventionnelle (laisser le feu allumé à 100°C pendant 10 minutes) est un non-sens énergétique et nutritionnel. 
 
@@ -42,19 +42,9 @@ Le projet est développé en technologies web natives (sans framework) pour gara
 
 ---
 
-## 🚀 Installation & Déploiement
-
-1. Clonez ou téléchargez ce dépôt sur votre machine.
-2. Pour le publier en ligne gratuitement via **GitHub Pages** :
-   * Allez dans les **Settings** de votre dépôt GitHub.
-   * Cliquez sur l'onglet **Pages** dans le menu de gauche.
-   * Sous *Build and deployment*, choisissez la branche `main` (ou `master`) et cliquez sur **Save**.
-   * Votre application sera en ligne à l'adresse : `https://<votre-nom-d-utilisateur>.github.io/<nom-du-depot>/`
-
----
 
 ## 🌱 Impact Écologique
 
 En éteignant votre plaque à induction dès le début de la cuisson, vous économisez environ **150 à 300 Wh par repas**. À l'échelle d'un foyer sur une année, cela représente une baisse significative de la consommation d'électricité et plusieurs kilogrammes de CO₂ évités.
 
-*BastaWatts : Cuisinez intelligemment, économisez simplement.*
+*PastaWatts : Cuisinez intelligemment, économisez simplement.*
