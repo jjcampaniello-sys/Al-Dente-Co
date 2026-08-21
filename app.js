@@ -35,6 +35,7 @@ function calculer() {
     const cat = document.getElementById('category').value;
     const poids = parseFloat(document.getElementById('poids').value) || 0;
     const cass = document.getElementById('casserole').value;
+    const tarifKwh = parseFloat(document.getElementById('tarifKwh').value) || 0.25;
     const stepList = document.getElementById('prepSteps');
     
     let volEau = 0; let poidsSel = 0; let tMinutes = 0; let whSaved = 0;
@@ -76,7 +77,7 @@ function calculer() {
     document.getElementById('eau').innerText = volEau.toFixed(2);
     document.getElementById('sel').innerText = poidsSel;
     document.getElementById('ecoWh').innerText = whSaved;
-    document.getElementById('ecoEur').innerText = (whSaved * 0.00025).toFixed(3);
+    document.getElementById('ecoEur').innerText = (whSaved * (tarifKwh / 1000)).toFixed(3);
     document.getElementById('ecoCo2').innerText = Math.round(whSaved * 0.05);
 
     if (!active) { 
