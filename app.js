@@ -1,17 +1,17 @@
 
 let endTimestamp = null, audioCtx = null;
 const configPates = {
-    fines: { ratio: 1.5, sel: 10, offset: 2, wh: 150 },      
-    epaisses: { ratio: 1.5, sel: 10, offset: 3, wh: 165 },   
-    completes: { ratio: 1.5, sel: 10, offset: 5, wh: 180 }
+    fines:     { ratio: 1.0, sel: 10, offset: 2, wh: 150 },      
+    epaisses:  { ratio: 1.0, sel: 10, offset: 3, wh: 165 },   
+    completes: { ratio: 1.0, sel: 10, offset: 5, wh: 180 }
 };
 
 const configGrains = {
-    riz_blanc: { ratio: 1.5, sel: 5, ebullition: 2, repos: 12, wh: 150, prep: "Rincer 3 fois à l'eau froide pour enlever l'amidon libre.", methode: "Mettre le riz et l'eau froide ensemble. Porter à ébullition avec couvercle." },
-    riz_complet: { ratio: 2.5, sel: 5, ebullition: 5, repos: 25, wh: 300, prep: "Rincer abondamment à l'eau courante.", methode: "Mettre le riz et l'eau froide ensemble. Porter à ébullition soutenue avec couvercle." },
-    quinoa: { ratio: 2.0, sel: 5, ebullition: 0, repos: 15, wh: 120, prep: "Rincer longuement pour éliminer la saponine amère.", methode: "Porter l'eau seule à ébullition (100°C). Jeter le quinoa." },
-    boulgour: { ratio: 1.8, sel: 5, ebullition: 0, repos: 12, wh: 110, prep: "Aucun conditionnement requis.", methode: "Porter l'eau seule à ébullition (100°C). Jeter le boulgour." },
-    ble_grain: { ratio: 2.5, sel: 7, ebullition: 3, repos: 20, wh: 220, prep: "Aucun conditionnement requis.", methode: "Mettre le blé et l'eau froide ensemble. Porter à ébullition avec couvercle." }
+    riz_blanc:    { ratio: 0.18, sel: 6, ebullition: 2,  repos: 12, wh: 150, prep: "Rincer 3 fois à l'eau froide pour enlever l'amidon libre.", methode: "Mettre le riz et l'eau froide ensemble. Porter à ébullition avec couvercle." },
+    riz_complet:  { ratio: 0.30, sel: 6, ebullition: 5,  repos: 40, wh: 300, prep: "Rincer abondamment à l'eau courante.", methode: "Mettre le riz et l'eau froide ensemble. Porter à ébullition soutenue avec couvercle." },
+    quinoa:       { ratio: 0.28, sel: 5, ebullition: 12, repos: 5,  wh: 120, prep: "Rincer longuement pour éliminer la saponine amère.", methode: "Porter l'eau seule à ébullition (100°C). Jeter le quinoa." },
+    boulgour:     { ratio: 0.20, sel: 5, ebullition: 10, repos: 6, wh: 110, prep: "Aucun conditionnement requis.", methode: "Porter l'eau seule à ébullition (100°C). Jeter le boulgour, feu doux." },
+    ble_grain:    { ratio: 0.35, sel: 6, ebullition: 45, repos: 15, wh: 220, prep: "Aucun conditionnement requis. Un trempage de 8h améliore le résultat.", methode: "Mettre le blé et l'eau froide ensemble. Porter à ébullition avec couvercle." }
 };
 
 let sec = 0, active = false, inter = null, wakeLock = null;
