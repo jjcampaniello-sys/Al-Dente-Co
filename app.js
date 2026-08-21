@@ -1,3 +1,5 @@
+
+let endTimestamp = null, audioCtx = null;
 const configPates = {
     fines: { ratio: 1.5, sel: 10, offset: 2, wh: 150 },      
     epaisses: { ratio: 1.5, sel: 10, offset: 3, wh: 165 },   
@@ -30,8 +32,8 @@ function toggleInputs() {
 
 function calculer() {
     const cat = document.getElementById('category').value;
-    const poids = parseFloat(document.getElementById('poids').value) || 0;
-    const cass = document.getElementById('casserole').value;
+    const poids = Math,max(0, parseFloat(document.getElementById('poids').value) || 0;
+    const cass = document.getElementById('casserole').value) || 0);
     const alt = parseInt(document.getElementById('altitude').value);
     const tarifKwh = parseFloat(document.getElementById('tarifKwh').value) || 0.25;
     const stepList = document.getElementById('prepSteps');
@@ -47,7 +49,7 @@ function calculer() {
 
         volEau = (poids / 100) * item.ratio; 
         poidsSel = Math.round(volEau * item.sel);
-        tMinutes = tPaquet + item.offset + (cass === 'legere' ? 1 : 0) - extraBoil;
+        tMinutes = Math, max(0,tPaquet + item.offset + (cass === 'legere' ? 1 : 0) - extraBoil);
         whSaved = Math.round(item.wh * (poids / 200)) - (extraBoil * 15);
 
         stepList.innerHTML += `<li>Mettre ${volEau.toFixed(2)}L d'eau et ${poidsSel}g de sel dans la casserole.</li>`;
@@ -59,7 +61,9 @@ function calculer() {
         }
         stepList.innerHTML += `<li>Mettez impérativement un <strong>COUVERCLE hermétique</strong> et <strong>COUPEZ LE FEU</strong>.</li>`;
     } else {
-        const grain = document.getElementById('typeGrain').value;
+        const grain = cat === 'riz'
+        ? document.getElementById('typeRiz').value;
+          ? document.getElementById('typeCereale').value;
         const item = configGrains[grain];
 
         volEau = (poids / 100) * item.ratio; 
@@ -100,39 +104,69 @@ async function requestWakeLock() {
 function releaseWakeLock() {
     if (wakeLock !== null) { wakeLock.release(); wakeLock = null; }
 }
+function toggleInputs() {
+    const cat = document.getElementById('category').value;
+    document.getElementById('pates-options').style.display = (cat === 'pates') ? 'block' : 'none';
+    document.getElementById('riz-options').style.display = (cat === 'riz') ? 'block' : 'none';
+    document.getElementById('cereales-options').style.display = (cat === 'cereales') ? 'block' : 'none';
+
+    active = false;
+    clearInterval(inter);
+    releaseWakeLock();
+    document.getElementById('btn').innerText = "Lancer la cuisson passive";
+    document.getElementById('btn').style.background = "var(--green)";
+    calculer();
+}
+function showTime() {
+    const m = Math.floor(sec/60).toString().padStart(2,'0');
+    const s = (sec%60).toString().padStart(2,'0');
+    document.getElementById('disp').innerText = `${m}:${s}`;
+}
+
+function tick() {
+    const remaining = Math.round((endTimestamp - Date.now()) / 1000);
+    sec = Math.max(0, remaining);
+    showTime();
+    if (remaining <= 0) {
+        clearInterval(inter); active = false;
+        const b = document.getElementById('btn');
+        b.innerText = "Terminé !"; b.style.background = "#34495e";
+        releaseWakeLock();
+        localStorage.removeItem('pastawatts_end');
+        declencherAlerteVocale();
+    }
+}
 
 function toggle() {
     const b = document.getElementById('btn');
     if (active) {
-        clearInterval(inter); active = false; b.innerText = "Reprendre la cuisson"; b.style.background = "var(--green)";
+        clearInterval(inter); active = false;
+        b.innerText = "Reprendre la cuisson"; b.style.background = "var(--green)";
         releaseWakeLock();
+        localStorage.removeItem('pastawatts_end');
     } else {
+        if (!audioCtx) {
+            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+        }
         active = true; b.innerText = "PAUSE (Cuisson en cours...)"; b.style.background = "var(--red)";
         requestWakeLock();
-        
-        inter = setInterval(() => {
-            sec--; showTime();
-            if (sec <= 0) {
-                clearInterval(inter); active = false; b.innerText = "Terminé !"; b.style.background = "#34495e";
-                releaseWakeLock();
-                declencherAlerteVocale();
-            }
-        }, 1000);
+        endTimestamp = Date.now() + sec * 1000;
+        localStorage.setItem('pastawatts_end', endTimestamp);
+        inter = setInterval(tick, 1000);
     }
 }
+
 
 function declencherAlerteVocale() {
     const cat = document.getElementById('category').value;
     let nomAliment = "votre préparation";
     if (cat === 'pates') nomAliment = "les pâtes";
-    else {
-        const grain = document.getElementById('typeGrain').value;
-        if(grain.startsWith('riz')) nomAliment = "le riz";
-        else nomAliment = "les céréales";
-    }
+    else if (cat === 'riz') nomAliment = "le riz";
+    else nomAliment = "les céréales";
 
     try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         oscillator.connect(gainNode);
@@ -154,4 +188,23 @@ function declencherAlerteVocale() {
     }, 500);
 }
 
-window.onload = calculer;
+
+window.onload = () => {
+    calculer();
+    const savedEnd = localStorage.getItem('pastawatts_end');
+    if (savedEnd) {
+        endTimestamp = parseInt(savedEnd, 10);
+        const remaining = Math.round((endTimestamp - Date.now()) / 1000);
+        if (remaining > 0) {
+            sec = remaining; showTime();
+            active = true;
+            const b = document.getElementById('btn');
+            b.innerText = "PAUSE (Cuisson en cours...)"; b.style.background = "var(--red)";
+            requestWakeLock();
+            inter = setInterval(tick, 1000);
+        } else {
+            localStorage.removeItem('pastawatts_end');
+        }
+    }
+};
+
