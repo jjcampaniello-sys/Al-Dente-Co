@@ -10,7 +10,7 @@ L'objectif : **diviser par deux la consommation d'énergie en cuisine tout en ga
 
 La cuisson conventionnelle (laisser le feu allumé à 100°C pendant 10 minutes) est un non-sens énergétique et nutritionnel. 
 
-### 1. Le verrouillage des protéines (Gluten)
+### 1. Les protéines (Gluten)
 Pour que des pâtes conservent un **Index Glycémique (IG) bas**, les protéines (le gluten) doivent coaguler pour former une barrière physique solide autour de l'amidon. Cette polymérisation se produit dès que l'eau atteint **80°C à 85°C**. 
 En jetant les pâtes à 100°C puis en coupant immédiatement le feu sous un couvercle fermé, le gluten se fige instantanément. Grâce à l'inertie thermique calculée par l'application, l'eau reste au-dessus de 80°C pendant toute la durée du repos, maintenant l'amidon prisonnier. Les pâtes restent fermes, ne collent pas, et se comportent comme des sucres lents dans l'organisme.
 
