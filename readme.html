@@ -1,207 +1,654 @@
-🌱 PastaWatts — Assistant de Cuisson Passive & Éco-Responsable
-
-PastaWatts est une application web légère conçue pour aider à optimiser la cuisson des pâtes, du riz et de certaines céréales sur plaque à induction, en exploitant la chaleur accumulée dans l'eau, l'aliment et le récipient.
-
-L'objectif est de réduire la consommation d'énergie pendant la phase de cuisson tout en conservant une cuisson satisfaisante.
-
-«Important : les paramètres proposés sont des estimations pratiques. Le résultat réel dépend notamment de la masse d'aliment, du volume d'eau, du récipient, de la puissance de la plaque, de la température initiale des ingrédients et de la température ambiante.»
-
----
-
-🔬 Principe scientifique
-
-1. La cuisson passive et l'inertie thermique
-
-Une fois l'eau portée à ébullition, elle contient une quantité importante d'énergie thermique.
-
-Lorsque la plaque est coupée et que le récipient reste couvert, l'eau, le récipient et les aliments continuent à transférer leur chaleur. La température diminue progressivement, mais peut rester suffisamment élevée pendant plusieurs minutes pour poursuivre la cuisson.
-
-La quantité de chaleur disponible dépend principalement de la capacité thermique du système :
-
-Q = m × Cp × ΔT
-
-où :
-
-- Q est l'énergie thermique disponible ;
-- m est la masse du système ;
-- Cp est sa capacité thermique massique ;
-- ΔT est la différence de température.
-
-Le couvercle limite également les pertes par convection et évaporation.
-
-PastaWatts utilise donc la quantité d'eau, la masse d'aliment, le type de récipient et la durée de cuisson pour proposer une durée de cuisson passive.
-
-La méthode n'est cependant pas équivalente à une cuisson maintenue en permanence à 100 °C : la température diminue progressivement après l'arrêt de la plaque.
-
----
-
-2. Transformation de l'amidon
-
-Lors de la cuisson des pâtes et des céréales, l'eau et la chaleur provoquent notamment la gélatinisation de l'amidon.
-
-L'amidon absorbe progressivement l'eau et sa structure est modifiée sous l'effet de la température. La température nécessaire dépend du type d'amidon et de la matrice alimentaire ; il n'existe donc pas une température unique applicable à toutes les pâtes et céréales.
-
-La cuisson passive cherche à maintenir suffisamment longtemps une température favorable à cette transformation, malgré le refroidissement progressif du système.
-
-Le résultat dépend notamment :
-
-- de l'épaisseur et de la géométrie de l'aliment ;
-- de sa composition ;
-- de la quantité d'eau disponible ;
-- de la température initiale ;
-- de la température atteinte avant l'arrêt de la plaque ;
-- du récipient utilisé ;
-- de la durée de maintien à chaud.
-
-Une cuisson plus courte ou plus ferme peut également modifier la digestibilité de l'amidon, mais la cuisson passive ne garantit pas à elle seule un index glycémique faible.
-
-L'index glycémique dépend de nombreux facteurs : type de céréale, variété, degré de transformation, cuisson, texture, refroidissement éventuel, composition du repas et quantité consommée.
-
----
-
-3. Rôle du gluten et des protéines
-
-Dans les pâtes de blé, les protéines du gluten contribuent à la structure de la pâte et interagissent avec l'amidon et l'eau pendant la cuisson.
-
-Cependant, il serait incorrect d'affirmer que le gluten forme une simple « barrière » empêchant l'amidon d'être digéré ou qu'une coagulation du gluten à une température précise suffit à obtenir un index glycémique bas.
-
-La texture finale des pâtes résulte de plusieurs phénomènes simultanés : hydratation, gélatinisation de l'amidon, évolution du réseau protéique et transfert de chaleur et d'eau vers le cœur de la pâte.
-
-PastaWatts exploite donc principalement les phénomènes thermiques et d'hydratation, et non un mécanisme particulier de « blocage » de l'amidon.
-
----
-
-4. Rôle du sel
-
-Le sel (chlorure de sodium, NaCl) joue principalement un rôle gustatif dans la cuisson des pâtes.
-
-Il peut également modifier certaines propriétés physico-chimiques de l'eau et des protéines, mais il n'est pas nécessaire à la cuisson passive et ne remplace pas l'énergie thermique nécessaire à la cuisson de l'amidon.
-
-Il n'est donc pas scientifiquement justifié de considérer le sel comme un substitut de la chaleur.
-
-PastaWatts permet d'ajuster la quantité de sel indépendamment du temps et du principe de cuisson.
-
-La quantité de sel recommandée par l'application doit ainsi être considérée avant tout comme un paramètre d'assaisonnement, et non comme une condition nécessaire à la réussite de la cuisson.
-
----
-
-🍚 Cuisson par absorption des céréales
-
-Pour le riz, le quinoa et certaines céréales, PastaWatts utilise une approche basée sur la cuisson par absorption.
-
-L'eau ajoutée est absorbée en grande partie par le grain ou reste incorporée au produit final. Cette méthode permet de limiter les pertes de nutriments hydrosolubles qui peuvent survenir lorsqu'un aliment est cuit dans un grand volume d'eau puis égoutté.
-
-Cependant, il ne faut pas considérer que cette méthode conserve nécessairement 100 % des vitamines et minéraux.
-
-Certaines vitamines sont sensibles à la chaleur et peuvent subir des pertes pendant la cuisson. Les minéraux sont généralement plus stables thermiquement, mais peuvent également être perdus si une partie de l'eau de cuisson est éliminée.
-
-La cuisson par absorption peut donc limiter certaines pertes liées à l'égouttage, sans garantir une conservation intégrale des micronutriments.
-
----
-
-⚙️ Fonctionnalités de l'application
-
-- Calcul de la quantité d'eau en fonction de la masse de l'aliment et du type de préparation.
-- Adaptation au type de pâte ou de céréale grâce à des paramètres spécifiques.
-- Prise en compte du récipient, notamment de sa capacité à conserver ou perdre de la chaleur.
-- Prise en compte de l'altitude, qui modifie la température d'ébullition de l'eau.
-- Calcul de la durée de cuisson passive à partir des paramètres sélectionnés.
-- Minuteur intégré avec alerte sonore et vocale.
-- Estimation de l'énergie économisée par rapport à une référence de consommation définie par l'application.
-
----
-
-🔥 Pourquoi l'altitude est prise en compte ?
-
-La température d'ébullition de l'eau diminue lorsque la pression atmosphérique diminue avec l'altitude.
-
-À haute altitude, l'eau peut donc bouillir à une température inférieure à 100 °C. La température initiale du système étant plus faible, la quantité d'énergie thermique disponible après l'arrêt de la plaque peut également être différente.
-
-PastaWatts applique donc une correction simplifiée de la durée de cuisson passive pour les altitudes élevées.
-
-Cette correction reste une approximation : la pression atmosphérique réelle dépend également des conditions météorologiques.
-
----
-
-🥘 Influence du récipient
-
-Le récipient joue un rôle important dans la cuisson passive.
-
-Un récipient lourd possède généralement une capacité thermique plus importante et peut restituer davantage de chaleur après l'arrêt de la plaque.
-
-À l'inverse, un récipient léger peut perdre sa chaleur plus rapidement.
-
-Le couvercle est également important car il réduit notamment les pertes de chaleur par évaporation et convection.
-
-Les corrections appliquées par PastaWatts sont toutefois des approximations expérimentales et ne constituent pas un modèle thermodynamique complet du récipient.
-
----
-
-📊 Consommation d'énergie
-
-La cuisson passive permet potentiellement de réduire la consommation électrique puisque la plaque n'a plus besoin de fournir continuellement de l'énergie pendant toute la phase de cuisson.
-
-L'économie réelle dépend fortement :
-
-- de la puissance utilisée avant l'arrêt ;
-- du rendement de la plaque ;
-- de la durée de cuisson conventionnelle utilisée comme référence ;
-- de la quantité d'eau ;
-- de la température initiale ;
-- du récipient ;
-- du couvercle ;
-- de la température ambiante ;
-- de la masse d'aliment.
-
-Les valeurs affichées par PastaWatts doivent donc être considérées comme des estimations, et non comme des mesures expérimentales de consommation.
-
----
-
-🌱 Impact environnemental
-
-La réduction de la durée pendant laquelle la plaque fonctionne peut diminuer la consommation d'électricité nécessaire à la préparation d'un repas.
-
-L'économie annuelle dépend directement du nombre de cuissons et de l'énergie réellement économisée à chaque préparation.
-
-De même, la réduction des émissions de CO₂ dépend du facteur d'émission de l'électricité utilisée. Ce facteur varie fortement selon le pays, le fournisseur et le mix électrique.
-
-PastaWatts fournit donc une estimation indicative de l'économie d'énergie et, lorsqu'un facteur d'émission approprié est disponible, de l'impact carbone associé.
-
----
-
-🛠️ Structure du projet
-
-Le projet utilise des technologies web natives, sans framework, afin de rester léger et facilement utilisable sur smartphone.
-
-- "index.html" : structure de l'interface et menus dynamiques.
-- "style.css" : interface graphique responsive.
-- "app.js" : calculs, paramètres de cuisson et gestion du minuteur.
-- "manifest.json" : configuration de l'application web progressive (PWA).
-
----
-
-⚠️ Limites de la méthode
-
-PastaWatts ne mesure pas directement la température au cœur de l'aliment.
-
-Les durées proposées sont basées sur des paramètres simplifiés et doivent être considérées comme des estimations.
-
-Pour obtenir une cuisson reproductible, il est recommandé de conserver autant que possible les mêmes :
-
-- quantité d'aliment ;
-- volume d'eau ;
-- récipient ;
-- couvercle ;
-- puissance de chauffe ;
-- température initiale ;
-- durée avant et après l'arrêt de la plaque.
-
-La méthode peut nécessiter une adaptation selon les marques, formats et caractéristiques des aliments.
-
-PastaWatts est avant tout un outil d'optimisation pratique de la cuisson et de l'énergie, et non un modèle scientifique exact de transfert thermique ou de biochimie alimentaire.
-
----
-
-🌱 PastaWatts
-
-Cuisiner avec la chaleur accumulée plutôt qu'avec une plaque constamment allumée.
+<!DOCTYPE html><html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PastaWatts — À propos</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f4f7f5;
+        color: #263238;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 16px;
+        line-height: 1.65;
+    }
+
+    .page {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 20px 18px 40px;
+    }
+
+    .header {
+        background: white;
+        border-radius: 16px;
+        padding: 24px 20px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+        margin: 0 0 12px;
+        font-size: 27px;
+        line-height: 1.25;
+        color: #1b5e20;
+    }
+
+    h2 {
+        margin: 0 0 18px;
+        font-size: 23px;
+        line-height: 1.3;
+        color: #1b5e20;
+    }
+
+    h3 {
+        margin: 26px 0 10px;
+        font-size: 19px;
+        line-height: 1.35;
+        color: #37474f;
+    }
+
+    p {
+        margin: 0 0 16px;
+    }
+
+    ul {
+        margin: 8px 0 20px;
+        padding-left: 24px;
+    }
+
+    li {
+        margin-bottom: 8px;
+    }
+
+    .section {
+        background: white;
+        border-radius: 16px;
+        padding: 22px 20px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .warning {
+        background: #fff8e1;
+        border-left: 5px solid #f9a825;
+        border-radius: 10px;
+        padding: 15px 16px;
+        margin-top: 18px;
+        margin-bottom: 8px;
+    }
+
+    .formula {
+        background: #f1f8e9;
+        border-radius: 10px;
+        padding: 14px;
+        margin: 16px 0;
+        text-align: center;
+        font-size: 19px;
+        font-weight: bold;
+        color: #33691e;
+    }
+
+    .intro {
+        font-size: 17px;
+    }
+
+    .feature-list li {
+        margin-bottom: 10px;
+    }
+
+    .files {
+        background: #f5f5f5;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 10px;
+    }
+
+    .files code {
+        font-family: monospace;
+        font-size: 14px;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 25px 10px 10px;
+        color: #607d8b;
+        font-size: 15px;
+    }
+
+    .back {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 9px 14px;
+        border-radius: 10px;
+        background: #2e7d32;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .back:active {
+        transform: scale(0.98);
+    }
+
+    @media (max-width: 480px) {
+
+        body {
+            font-size: 16px;
+            line-height: 1.68;
+        }
+
+        .page {
+            padding: 12px 12px 30px;
+        }
+
+        .header,
+        .section {
+            padding: 20px 17px;
+            border-radius: 14px;
+        }
+
+        h1 {
+            font-size: 25px;
+        }
+
+        h2 {
+            font-size: 21px;
+        }
+
+        h3 {
+            font-size: 18px;
+        }
+
+        .intro {
+            font-size: 16px;
+        }
+    }
+</style>
+
+</head><body><div class="page"><a href="index.html" class="back">← Retour à PastaWatts</a>
+
+<div class="header">
+    <h1>🌱 PastaWatts</h1>
+
+    <p class="intro">
+        <strong>Assistant de Cuisson Passive & Éco-Responsable</strong>
+    </p>
+
+    <p>
+        PastaWatts est une application web légère conçue pour aider à optimiser
+        la cuisson des pâtes, du riz et de certaines céréales sur plaque à
+        induction, en exploitant la chaleur accumulée dans l'eau, l'aliment
+        et le récipient.
+    </p>
+
+    <p>
+        L'objectif est de réduire la consommation d'énergie pendant la phase
+        de cuisson tout en conservant une cuisson satisfaisante.
+    </p>
+
+    <div class="warning">
+        <strong>Important :</strong>
+        les paramètres proposés sont des estimations pratiques.
+        Le résultat réel dépend notamment de la masse d'aliment, du volume
+        d'eau, du récipient, de la puissance de la plaque, de la température
+        initiale des ingrédients et de la température ambiante.
+    </div>
+</div>
+
+
+<div class="section">
+
+    <h2>🔬 Principe scientifique</h2>
+
+    <h3>1. La cuisson passive et l'inertie thermique</h3>
+
+    <p>
+        Une fois l'eau portée à ébullition, elle contient une quantité
+        importante d'énergie thermique.
+    </p>
+
+    <p>
+        Lorsque la plaque est coupée et que le récipient reste couvert,
+        l'eau, le récipient et les aliments continuent à transférer leur
+        chaleur. La température diminue progressivement, mais peut rester
+        suffisamment élevée pendant plusieurs minutes pour poursuivre la
+        cuisson.
+    </p>
+
+    <p>
+        La quantité de chaleur disponible dépend principalement de la
+        capacité thermique du système :
+    </p>
+
+    <div class="formula">
+        Q = m × Cp × ΔT
+    </div>
+
+    <p>où :</p>
+
+    <ul>
+        <li><strong>Q</strong> est l'énergie thermique disponible ;</li>
+        <li><strong>m</strong> est la masse du système ;</li>
+        <li><strong>Cp</strong> est sa capacité thermique massique ;</li>
+        <li><strong>ΔT</strong> est la différence de température.</li>
+    </ul>
+
+    <p>
+        Le couvercle limite également les pertes par convection et
+        évaporation.
+    </p>
+
+    <p>
+        PastaWatts utilise donc la quantité d'eau, la masse d'aliment,
+        le type de récipient et la durée de cuisson pour proposer une
+        durée de cuisson passive.
+    </p>
+
+    <p>
+        La méthode n'est cependant pas équivalente à une cuisson maintenue
+        en permanence à 100&nbsp;°C : la température diminue progressivement
+        après l'arrêt de la plaque.
+    </p>
+
+
+    <h3>2. Transformation de l'amidon</h3>
+
+    <p>
+        Lors de la cuisson des pâtes et des céréales, l'eau et la chaleur
+        provoquent notamment la <strong>gélatinisation de l'amidon</strong>.
+    </p>
+
+    <p>
+        L'amidon absorbe progressivement l'eau et sa structure est
+        modifiée sous l'effet de la température. La température nécessaire
+        dépend du type d'amidon et de la matrice alimentaire ; il n'existe
+        donc pas une température unique applicable à toutes les pâtes et
+        céréales.
+    </p>
+
+    <p>
+        La cuisson passive cherche à maintenir suffisamment longtemps une
+        température favorable à cette transformation, malgré le
+        refroidissement progressif du système.
+    </p>
+
+    <p>Le résultat dépend notamment :</p>
+
+    <ul>
+        <li>de l'épaisseur et de la géométrie de l'aliment ;</li>
+        <li>de sa composition ;</li>
+        <li>de la quantité d'eau disponible ;</li>
+        <li>de la température initiale ;</li>
+        <li>de la température atteinte avant l'arrêt de la plaque ;</li>
+        <li>du récipient utilisé ;</li>
+        <li>de la durée de maintien à chaud.</li>
+    </ul>
+
+    <p>
+        Une cuisson plus courte ou plus ferme peut également modifier
+        la digestibilité de l'amidon, mais la cuisson passive ne garantit
+        pas à elle seule un index glycémique faible.
+    </p>
+
+    <p>
+        L'index glycémique dépend de nombreux facteurs : type de céréale,
+        variété, degré de transformation, cuisson, texture, refroidissement
+        éventuel, composition du repas et quantité consommée.
+    </p>
+
+
+    <h3>3. Rôle du gluten et des protéines</h3>
+
+    <p>
+        Dans les pâtes de blé, les protéines du gluten contribuent à la
+        structure de la pâte et interagissent avec l'amidon et l'eau
+        pendant la cuisson.
+    </p>
+
+    <p>
+        Cependant, il serait incorrect d'affirmer que le gluten forme une
+        simple « barrière » empêchant l'amidon d'être digéré ou qu'une
+        coagulation du gluten à une température précise suffit à obtenir
+        un index glycémique bas.
+    </p>
+
+    <p>
+        La texture finale des pâtes résulte de plusieurs phénomènes
+        simultanés : hydratation, gélatinisation de l'amidon, évolution
+        du réseau protéique et transfert de chaleur et d'eau vers le
+        cœur de la pâte.
+    </p>
+
+    <p>
+        PastaWatts exploite donc principalement les phénomènes thermiques
+        et d'hydratation, et non un mécanisme particulier de « blocage »
+        de l'amidon.
+    </p>
+
+
+    <h3>4. Rôle du sel</h3>
+
+    <p>
+        Le sel (chlorure de sodium, NaCl) joue principalement un rôle
+        <strong>gustatif</strong> dans la cuisson des pâtes.
+    </p>
+
+    <p>
+        Il peut également modifier certaines propriétés physico-chimiques
+        de l'eau et des protéines, mais il n'est pas nécessaire à la
+        cuisson passive et ne remplace pas l'énergie thermique nécessaire
+        à la cuisson de l'amidon.
+    </p>
+
+    <p>
+        Il n'est donc pas scientifiquement justifié de considérer le sel
+        comme un substitut de la chaleur.
+    </p>
+
+    <p>
+        PastaWatts permet d'ajuster la quantité de sel indépendamment du
+        temps et du principe de cuisson.
+    </p>
+
+    <p>
+        La quantité de sel recommandée par l'application doit ainsi être
+        considérée avant tout comme un paramètre d'assaisonnement,
+        et non comme une condition nécessaire à la réussite de la cuisson.
+    </p>
+
+</div>
+
+
+<div class="section">
+
+    <h2>🍚 Cuisson par absorption des céréales</h2>
+
+    <p>
+        Pour le riz, le quinoa et certaines céréales, PastaWatts utilise
+        une approche basée sur la <strong>cuisson par absorption</strong>.
+    </p>
+
+    <p>
+        L'eau ajoutée est absorbée en grande partie par le grain ou reste
+        incorporée au produit final. Cette méthode permet de limiter les
+        pertes de nutriments hydrosolubles qui peuvent survenir lorsqu'un
+        aliment est cuit dans un grand volume d'eau puis égoutté.
+    </p>
+
+    <p>
+        Cependant, il ne faut pas considérer que cette méthode conserve
+        nécessairement <strong>100&nbsp;% des vitamines et minéraux</strong>.
+    </p>
+
+    <p>
+        Certaines vitamines sont sensibles à la chaleur et peuvent subir
+        des pertes pendant la cuisson. Les minéraux sont généralement plus
+        stables thermiquement, mais peuvent également être perdus si une
+        partie de l'eau de cuisson est éliminée.
+    </p>
+
+    <p>
+        La cuisson par absorption peut donc limiter certaines pertes liées
+        à l'égouttage, sans garantir une conservation intégrale des
+        micronutriments.
+    </p>
+
+</div>
+
+
+<div class="section">
+
+    <h2>⚙️ Fonctionnalités de l'application</h2>
+
+    <ul class="feature-list">
+        <li>
+            <strong>Calcul de la quantité d'eau</strong> en fonction de la
+            masse de l'aliment et du type de préparation.
+        </li>
+
+        <li>
+            <strong>Adaptation au type de pâte ou de céréale</strong>
+            grâce à des paramètres spécifiques.
+        </li>
+
+        <li>
+            <strong>Prise en compte du récipient</strong>, notamment de sa
+            capacité à conserver ou perdre de la chaleur.
+        </li>
+
+        <li>
+            <strong>Prise en compte de l'altitude</strong>, qui modifie
+            la température d'ébullition de l'eau.
+        </li>
+
+        <li>
+            <strong>Calcul de la durée de cuisson passive</strong> à partir
+            des paramètres sélectionnés.
+        </li>
+
+        <li>
+            <strong>Minuteur intégré</strong> avec alerte sonore et vocale.
+        </li>
+
+        <li>
+            <strong>Estimation de l'énergie économisée</strong> par rapport
+            à une référence de consommation définie par l'application.
+        </li>
+    </ul>
+
+</div>
+
+
+<div class="section">
+
+    <h2>🔥 Pourquoi l'altitude est prise en compte ?</h2>
+
+    <p>
+        La température d'ébullition de l'eau diminue lorsque la pression
+        atmosphérique diminue avec l'altitude.
+    </p>
+
+    <p>
+        À haute altitude, l'eau peut donc bouillir à une température
+        inférieure à 100&nbsp;°C. La température initiale du système étant
+        plus faible, la quantité d'énergie thermique disponible après
+        l'arrêt de la plaque peut également être différente.
+    </p>
+
+    <p>
+        PastaWatts applique donc une correction simplifiée de la durée
+        de cuisson passive pour les altitudes élevées.
+    </p>
+
+    <p>
+        Cette correction reste une approximation : la pression atmosphérique
+        réelle dépend également des conditions météorologiques.
+    </p>
+
+</div>
+
+
+<div class="section">
+
+    <h2>🥘 Influence du récipient</h2>
+
+    <p>
+        Le récipient joue un rôle important dans la cuisson passive.
+    </p>
+
+    <p>
+        Un récipient lourd possède généralement une capacité thermique
+        plus importante et peut restituer davantage de chaleur après
+        l'arrêt de la plaque.
+    </p>
+
+    <p>
+        À l'inverse, un récipient léger peut perdre sa chaleur plus
+        rapidement.
+    </p>
+
+    <p>
+        Le couvercle est également important car il réduit notamment
+        les pertes de chaleur par évaporation et convection.
+    </p>
+
+    <p>
+        Les corrections appliquées par PastaWatts sont toutefois des
+        approximations expérimentales et ne constituent pas un modèle
+        thermodynamique complet du récipient.
+    </p>
+
+</div>
+
+
+<div class="section">
+
+    <h2>📊 Consommation d'énergie</h2>
+
+    <p>
+        La cuisson passive permet potentiellement de réduire la
+        consommation électrique puisque la plaque n'a plus besoin de
+        fournir continuellement de l'énergie pendant toute la phase
+        de cuisson.
+    </p>
+
+    <p>L'économie réelle dépend fortement :</p>
+
+    <ul>
+        <li>de la puissance utilisée avant l'arrêt ;</li>
+        <li>du rendement de la plaque ;</li>
+        <li>de la durée de cuisson conventionnelle utilisée comme référence ;</li>
+        <li>de la quantité d'eau ;</li>
+        <li>de la température initiale ;</li>
+        <li>du récipient ;</li>
+        <li>du couvercle ;</li>
+        <li>de la température ambiante ;</li>
+        <li>de la masse d'aliment.</li>
+    </ul>
+
+    <p>
+        Les valeurs affichées par PastaWatts doivent donc être considérées
+        comme des <strong>estimations</strong>, et non comme des mesures
+        expérimentales de consommation.
+    </p>
+
+</div>
+
+
+<div class="section">
+
+    <h2>🌱 Impact environnemental</h2>
+
+    <p>
+        La réduction de la durée pendant laquelle la plaque fonctionne
+        peut diminuer la consommation d'électricité nécessaire à la
+        préparation d'un repas.
+    </p>
+
+    <p>
+        L'économie annuelle dépend directement du nombre de cuissons et
+        de l'énergie réellement économisée à chaque préparation.
+    </p>
+
+    <p>
+        De même, la réduction des émissions de CO₂ dépend du
+        <strong>facteur d'émission de l'électricité utilisée</strong>.
+        Ce facteur varie fortement selon le pays, le fournisseur et
+        le mix électrique.
+    </p>
+
+    <p>
+        PastaWatts fournit donc une estimation indicative de l'économie
+        d'énergie et, lorsqu'un facteur d'émission approprié est
+        disponible, de l'impact carbone associé.
+    </p>
+
+</div>
+
+
+<div class="section">
+
+    <h2>🛠️ Structure du projet</h2>
+
+    <p>
+        Le projet utilise des technologies web natives, sans framework,
+        afin de rester léger et facilement utilisable sur smartphone.
+    </p>
+
+    <div class="files">
+        <p><code>index.html</code> : structure de l'interface et menus dynamiques.</p>
+        <p><code>style.css</code> : interface graphique responsive.</p>
+        <p><code>app.js</code> : calculs, paramètres de cuisson et gestion du minuteur.</p>
+        <p><code>manifest.json</code> : configuration de l'application web progressive (PWA).</p>
+    </div>
+
+</div>
+
+
+<div class="section">
+
+    <h2>⚠️ Limites de la méthode</h2>
+
+    <p>
+        PastaWatts ne mesure pas directement la température au cœur de
+        l'aliment.
+    </p>
+
+    <p>
+        Les durées proposées sont basées sur des paramètres simplifiés
+        et doivent être considérées comme des estimations.
+    </p>
+
+    <p>
+        Pour obtenir une cuisson reproductible, il est recommandé de
+        conserver autant que possible les mêmes :
+    </p>
+
+    <ul>
+        <li>quantité d'aliment ;</li>
+        <li>volume d'eau ;</li>
+        <li>récipient ;</li>
+        <li>couvercle ;</li>
+        <li>puissance de chauffe ;</li>
+        <li>température initiale ;</li>
+        <li>durée avant et après l'arrêt de la plaque.</li>
+    </ul>
+
+    <p>
+        La méthode peut nécessiter une adaptation selon les marques,
+        formats et caractéristiques des aliments.
+    </p>
+
+    <p>
+        <strong>
+            PastaWatts est avant tout un outil d'optimisation pratique
+            de la cuisson et de l'énergie, et non un modèle scientifique
+            exact de transfert thermique ou de biochimie alimentaire.
+        </strong>
+    </p>
+
+</div>
+
+
+<div class="footer">
+
+    <p>
+        🌱 <strong>PastaWatts</strong>
+    </p>
+
+    <p>
+        Cuisiner avec la chaleur accumulée plutôt qu'avec une plaque
+        constamment allumée.
+    </p>
+
+</div>
+
+</div></body>
+</html>
