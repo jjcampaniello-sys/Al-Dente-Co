@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PastaWatts - L'Assistant de Cuisson Passive</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🌱 PastaWatts</h1>
+    
+    <div class="group">
+        <label for="category">Catégorie d'aliment :</label>
+        <select id="category" onchange="toggleInputs()">
+            <option value="pates">🍝 Pâtes (Blé Dur / Complètes)</option>
+            <option value="riz">🌾 Riz (Blanc, Complet, Basmati)</option>
+            <option value="cereales">🥣 Autres Céréales (Quinoa, Boulgour...)</option>
+        </select>
+    </div>
+
+    <!-- Options dynamiques pour les Pâtes -->
+    <div id="pates-options" class="group">
+        <label for="formePates">Forme & Type de pâtes :</label>
+        <select id="formePates" onchange="calculer()">
+            <option value="fines">Fines / Longues (Spaghetti, Coquillettes) [-1 min de repos]</option>
+            <option value="epaisses" selected>Épaisses / Creuses (Penne, Rigatoni) [Inertie idéale]</option>
+            <option value="completes">Pâtes Complètes (Intégrales) [+2 min de repos]</option>
+        </select>
+        <label for="tempsPaquet" style="margin-top: 8px;">Temps indiqué sur le paquet (minutes) :</label>
+        <input type="number" id="tempsPaquet" value="9" min="1" oninput="calculer()">
+    </div>
+
+    <!-- Options dynamiques pour le Riz et Céréales -->
+    <div id="grains-options" class="group" style="display:none;">
+        <label for="typeGrain">Type exact de grain :</label>
+        <select id="typeGrain" onchange="calculer()">
+            <option value="riz_blanc">Riz Blanc / Basmati / Thaï</option>
+            <option value="riz_complet">Riz Complet (Grain entier)</option>
+            <option value="quinoa">Quinoa</option>
+            <option value="boulgour">Boulgour / Épeautre concassé</option>
+            <option value="ble_grain">Grains de Blé Entiers (Ebly, etc.)</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <label for="poids">Masse de l'aliment à cuire (grammes) :</label>
+        <input type="number" id="poids" value="200" min="10" oninput="calculer()">
+    </div>
+
+    <div class="group">
+        <label for="casserole">Type de votre casserole (sans isolation externe) :</label>
+        <select id="casserole" onchange="calculer()">
+            <option value="lourde">Fonte / Inox Épais / Fond capsulé (Garde la chaleur)</option>
+            <option value="legere">Aluminium fin / Inox Léger (+1 min de repos nécessaire)</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <label for="altitude">Altitude de votre cuisine :</label>
+        <select id="altitude" onchange="calculer()">
+            <option value="0">Plaine et zones côtières (Ex: Pays-Bas, 0-500m)</option>
+            <option value="1000">Moyenne Montagne (500-1500m) [+1 min feu actif]</option>
+            <option value="2000">Haute Montagne (>1500m) [+2 min feu actif]</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <label for="tarifKwh">Votre tarif d'électricité (€ / kWh) :</label>
+        <input type="number" id="tarifKwh" value="0.25" min="0" step="0.01" oninput="calculer()">
+    </div>
+
+    <div class="box">
+        <strong>💧 Eau requise :</strong> <span id="eau">3.00</span> L | 
+        <strong>🧂 Sel requis :</strong> <span id="sel">30</span> g
+        <div style="margin-top: 8px; font-weight: bold; color: #2c3e50;">Étapes de préparation :</div>
+        <ol class="step-list" id="prepSteps"></ol>
+        
+        <div class="eco-badge">
+            📈 Économie sur l'induction : ~<span id="ecoWh">0</span> Wh soit <span id="ecoEur">0.00</span>€
+        </div>
+    </div>
+
+    <div class="timer" id="disp">00:00</div>
+    <button id="btn" onclick="toggle()">Lancer la cuisson passive</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
+
+
 
