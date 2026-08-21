@@ -5,22 +5,26 @@ const configPates = {
 };
 
 const configGrains = {
-    riz_blanc: { ratio: 1.5, sel: 5, ebullition: 2, repos: 12, wh: 150, prep: "Rincer 3 fois à l'eau froide.", methode: "Riz + eau froide ensemble. Couvercle." },
-    riz_complet: { ratio: 2.5, sel: 5, ebullition: 5, repos: 25, wh: 300, prep: "Rincer abondamment à l'eau.", methode: "Riz + eau froide ensemble. Couvercle." },
-    quinoa: { ratio: 2.0, sel: 5, ebullition: 0, repos: 15, wh: 120, prep: "Rincer longuement (saponine).", methode: "Porter l'eau seule à ébullition." },
-    boulgour: { ratio: 1.8, sel: 5, ebullition: 0, repos: 12, wh: 110, prep: "Aucun conditionnement.", methode: "Porter l'eau seule à ébullition." },
-    ble_grain: { ratio: 2.5, sel: 7, ebullition: 3, repos: 20, wh: 220, prep: "Aucun conditionnement.", methode: "Blé + eau froide ensemble. Couvercle." }
+    riz_blanc: { ratio: 1.5, sel: 5, ebullition: 2, repos: 12, wh: 150, prep: "Rincer 3 fois à l'eau froide pour enlever l'amidon libre.", methode: "Mettre le riz et l'eau froide ensemble. Porter à ébullition avec couvercle." },
+    riz_complet: { ratio: 2.5, sel: 5, ebullition: 5, repos: 25, wh: 300, prep: "Rincer abondamment à l'eau courante.", methode: "Mettre le riz et l'eau froide ensemble. Porter à ébullition soutenue avec couvercle." },
+    quinoa: { ratio: 2.0, sel: 5, ebullition: 0, repos: 15, wh: 120, prep: "Rincer longuement pour éliminer la saponine amère.", methode: "Porter l'eau seule à ébullition (100°C). Jeter le quinoa." },
+    boulgour: { ratio: 1.8, sel: 5, ebullition: 0, repos: 12, wh: 110, prep: "Aucun conditionnement requis.", methode: "Porter l'eau seule à ébullition (100°C). Jeter le boulgour." },
+    ble_grain: { ratio: 2.5, sel: 7, ebullition: 3, repos: 20, wh: 220, prep: "Aucun conditionnement requis.", methode: "Mettre le blé et l'eau froide ensemble. Porter à ébullition avec couvercle." }
 };
 
 let sec = 0, active = false, inter = null, wakeLock = null;
 
 function toggleInputs() {
     const cat = document.getElementById('category').value;
-    document.getElementById('pates-options').style.display = (cat === 'pates') ? 'flex' : 'none';
+    document.getElementById('pates-options').style.display = (cat === 'pates') ? 'block' : 'none';
     document.getElementById('grains-options').style.display = (cat !== 'pates') ? 'block' : 'none';
-    active = false; clearInterval(inter); releaseWakeLock();
+    
+    active = false;
+    clearInterval(inter);
+    releaseWakeLock();
     document.getElementById('btn').innerText = "Lancer la cuisson passive";
     document.getElementById('btn').style.background = "var(--green)";
+    
     calculer();
 }
 
@@ -33,7 +37,7 @@ function calculer() {
     const stepList = document.getElementById('prepSteps');
     
     let volEau = 0; let poidsSel = 0; let tMinutes = 0; let whSaved = 0;
-    let extraBoil = alt === 1000 ? 1 : (alt === 2000 ? 2 : 0); // Temps de chauffe actif requis en altitude
+    let extraBoil = alt === 1000 ? 1 : (alt === 2000 ? 2 : 0); 
     stepList.innerHTML = ""; 
 
     if (cat === 'pates') {
@@ -44,15 +48,16 @@ function calculer() {
         volEau = (poids / 100) * item.ratio; 
         poidsSel = Math.round(volEau * item.sel);
         tMinutes = tPaquet + item.offset + (cass === 'legere' ? 1 : 0) - extraBoil;
-        whSaved = Math.round(item.wh * (poids / 200)) - (extraBoil * 15); // Correction éco si feu maintenu
+        whSaved = Math.round(item.wh * (poids / 200)) - (extraBoil * 15);
 
-        stepList.innerHTML += `<li>Eau : ${volEau.toFixed(2)}L | Sel : ${poidsSel}g. Chauffer à ébullition.</li>`;
+        stepList.innerHTML += `<li>Mettre ${volEau.toFixed(2)}L d'eau et ${poidsSel}g de sel dans la casserole.</li>`;
+        stepList.innerHTML += `<li>Porter à ébullition franche (100°C).</li>`;
         if (extraBoil > 0) {
-            stepList.innerHTML += `<li>Jeter les pâtes. ⚠️ Altitude : <strong>Laisser le feu actif ${extraBoil} min</strong> à couvert.</li>`;
+            stepList.innerHTML += `<li>Jeter les pâtes. ⚠️ Altitude : <strong>Laisser bouillir activement ${extraBoil} minute(s)</strong> avant de couper le feu.</li>`;
         } else {
-            stepList.innerHTML += `<li>Jeter les pâtes, remuer 30s sous couvercle.</li>`;
+            stepList.innerHTML += `<li>Jeter les pâtes, remuer 30 secondes pour bloquer l'amidon en surface.</li>`;
         }
-        stepList.innerHTML += `<li><strong>COUPEZ LE FEU</strong> immédiatement (Couvercle fermé).</li>`;
+        stepList.innerHTML += `<li>Mettez impérativement un <strong>COUVERCLE hermétique</strong> et <strong>COUPEZ LE FEU</strong>.</li>`;
     } else {
         const grain = document.getElementById('typeGrain').value;
         const item = configGrains[grain];
@@ -63,14 +68,14 @@ function calculer() {
         tMinutes = item.repos + (cass === 'legere' ? 1 : 0);
         whSaved = Math.round(item.wh * (poids / 200)) - (extraBoil * 15);
 
-        stepList.innerHTML += `<li><strong>Prép :</strong> ${item.prep}</li>`;
+        stepList.innerHTML += `<li><strong>Préparation :</strong> ${item.prep}</li>`;
         stepList.innerHTML += `<li>${item.methode} (Eau : ${volEau.toFixed(2)}L, Sel : ${poidsSel}g).</li>`;
         if (totalEbullition > 0) {
-            stepList.innerHTML += `<li>Laisser bouillir sur l'induction pendant <strong>${totalEbullition} min</strong> sous couvercle.</li>`;
+            stepList.innerHTML += `<li>Laisser bouillir sur l'induction pendant exactement <strong>${totalEbullition} minutes</strong> sous couvercle.</li>`;
         } else {
-            stepList.innerHTML += `<li>À l'ébullition, jeter le grain.</li>`;
+            stepList.innerHTML += `<li>Dès l'ébullition de l'eau atteinte, jeter le grain.</li>`;
         }
-        stepList.innerHTML += `<li><strong>COUPEZ LE FEU</strong>. Laisser le grain absorber l'eau.</li>`;
+        stepList.innerHTML += `<li><strong>COUPEZ LE FEU</strong>, gardez le couvercle fermé. Le grain va absorber l'eau.</li>`;
     }
 
     document.getElementById('eau').innerText = volEau.toFixed(2);
@@ -78,7 +83,10 @@ function calculer() {
     document.getElementById('ecoWh').innerText = Math.max(0, whSaved);
     document.getElementById('ecoEur').innerText = (Math.max(0, whSaved) * (tarifKwh / 1000)).toFixed(2);
 
-    if (!active) { sec = tMinutes * 60; showTime(); }
+    if (!active) { 
+        sec = tMinutes * 60; 
+        showTime(); 
+    }
 }
 
 function showTime() {
@@ -88,6 +96,7 @@ function showTime() {
 async function requestWakeLock() {
     try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
 }
+
 function releaseWakeLock() {
     if (wakeLock !== null) { wakeLock.release(); wakeLock = null; }
 }
@@ -95,14 +104,18 @@ function releaseWakeLock() {
 function toggle() {
     const b = document.getElementById('btn');
     if (active) {
-        clearInterval(inter); active = false; b.innerText = "Reprendre"; b.style.background = "var(--green)"; releaseWakeLock();
+        clearInterval(inter); active = false; b.innerText = "Reprendre la cuisson"; b.style.background = "var(--green)";
+        releaseWakeLock();
     } else {
-        active = true; b.innerText = "PAUSE"; b.style.background = "var(--red)"; requestWakeLock();
+        active = true; b.innerText = "PAUSE (Cuisson en cours...)"; b.style.background = "var(--red)";
+        requestWakeLock();
+        
         inter = setInterval(() => {
             sec--; showTime();
             if (sec <= 0) {
                 clearInterval(inter); active = false; b.innerText = "Terminé !"; b.style.background = "#34495e";
-                releaseWakeLock(); declencherAlerteVocale();
+                releaseWakeLock();
+                declencherAlerteVocale();
             }
         }, 1000);
     }
@@ -110,32 +123,35 @@ function toggle() {
 
 function declencherAlerteVocale() {
     const cat = document.getElementById('category').value;
-    let nom = "votre préparation";
-    if (cat === 'pates') nom = "les pâtes";
+    let nomAliment = "votre préparation";
+    if (cat === 'pates') nomAliment = "les pâtes";
     else {
         const grain = document.getElementById('typeGrain').value;
-        if(grain.startsWith('riz')) nom = "le riz";
-        else nom = "les céréales";
+        if(grain.startsWith('riz')) nomAliment = "le riz";
+        else nomAliment = "les céréales";
     }
 
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator(); const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-        gain.gain.setValueAtTime(0.5, ctx.currentTime);
-        osc.start(); osc.stop(ctx.currentTime + 0.3);
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.6, audioCtx.currentTime);
+        oscillator.start(); oscillator.stop(audioCtx.currentTime + 0.4);
     } catch(e) {}
 
     setTimeout(() => {
         if ('speechSynthesis' in window) {
-            const msg = new SpeechSynthesisUtterance(`Attention, la cuisson passive pour ${nom} est terminée. Veuillez égoutter ou servir.`);
-            msg.lang = 'fr-FR'; window.speechSynthesis.speak(msg);
-        } else { alert(`⏰ Cuisson terminée pour ${nom} !`); }
+            const message = new SpeechSynthesisUtterance(`Attention, la cuisson passive pour ${nomAliment} est terminée. Veuillez égoutter ou servir immédiatement.`);
+            message.lang = 'fr-FR'; window.speechSynthesis.speak(message);
+        } else {
+            alert(`⏰ Cuisson passive terminée pour ${nomAliment} !`);
+        }
         calculer();
-    }, 400);
+    }, 500);
 }
 
 window.onload = calculer;
-
-
