@@ -33,16 +33,23 @@
     </div>
 
     <!-- Options dynamiques pour le Riz et Céréales -->
-    <div id="grains-options" class="group" style="display:none;">
-        <label for="typeGrain">Type exact de grain :</label>
-        <select id="typeGrain" onchange="calculer()">
-            <option value="riz_blanc">Riz Blanc / Basmati / Thaï</option>
-            <option value="riz_complet">Riz Complet (Grain entier)</option>
-            <option value="quinoa">Quinoa</option>
-            <option value="boulgour">Boulgour / Épeautre concassé</option>
-            <option value="ble_grain">Grains de Blé Entiers (Ebly, etc.)</option>
-        </select>
-    </div>
+   <div id="riz-options" class="group" style="display:none;">
+    <label for="typeRiz">Type de riz :</label>
+    <select id="typeRiz" onchange="calculer()">
+        <option value="riz_blanc">Riz Blanc / Basmati / Thaï</option>
+        <option value="riz_complet">Riz Complet (Grain entier)</option>
+    </select>
+</div>
+
+<div id="cereales-options" class="group" style="display:none;">
+    <label for="typeCereale">Type de céréale :</label>
+    <select id="typeCereale" onchange="calculer()">
+        <option value="quinoa">Quinoa</option>
+        <option value="boulgour">Boulgour / Épeautre concassé</option>
+        <option value="ble_grain">Grains de Blé Entiers (Ebly, etc.)</option>
+    </select>
+</div>
+
 
     <div class="group">
         <label for="poids">Masse de l'aliment à cuire (grammes) :</label>
@@ -77,12 +84,12 @@
         <div style="margin-top: 8px; font-weight: bold; color: #2c3e50;">Étapes de préparation :</div>
         <ol class="step-list" id="prepSteps"></ol>
         
-        <div class="eco-badge">
+        <div class="eco-badge aria-live="polite">
             📈 Économie sur l'induction : ~<span id="ecoWh">0</span> Wh soit <span id="ecoEur">0.00</span>€
         </div>
     </div>
 
-    <div class="timer" id="disp">00:00</div>
+    <div class="timer" id="disp" aria-live="polite">00:00</div>
     <button id="btn" onclick="toggle()">Lancer la cuisson passive</button>
 </div>
 
