@@ -1,0 +1,19 @@
+<svg xmlns="http://w3.org" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Fond vert PastaWatts -->
+  <rect width="512" height="512" fill="#27ae60"/>
+  
+  <!-- Casserole blanche -->
+  <path d="M150 220 v120 c0 20 20 40 40 40 h132 c20 0 40-20 40-40 v-120" fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Poignées de la casserole -->
+  <path d="M150 260 c-30 0-30 40 0 40 M362 260 c30 0 30 40 0 40" fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
+  
+  <!-- Tige de la plante 🌱 -->
+  <path d="M256 220 q-10-40-5-80" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Feuille gauche -->
+  <path d="M251 140 c-40 0-40-30-40-30 s30 0 40 30z" fill="#ffffff"/>
+  
+  <!-- Feuille droite -->
+  <path d="M253 160 c35-15 45-40 45-40 s-25 5-45 40z" fill="#ffffff"/>
+</svg>
