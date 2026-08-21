@@ -1,7 +1,7 @@
 // Base de données physico-chimique CORRIGÉE
 const configPates = {
-    fines: { ratio: 1.5, sel: 10, offset: 2, wh: 150 },      // 1.5L d'eau pour 100g de pâtes
-    epaisses: { ratio: 1.5, sel: 10, offset: 3, wh: 165 },   // Corrigé de 15 à 1.5
+    fines: { ratio: 1.5, sel: 10, offset: 2, wh: 150 },      
+    epaisses: { ratio: 1.5, sel: 10, offset: 3, wh: 165 },   
     completes: { ratio: 1.5, sel: 10, offset: 5, wh: 180 }
 };
 
@@ -14,6 +14,7 @@ const configGrains = {
 };
 
 let sec = 0, active = false, inter = null;
+let wakeLock = null; // Variable pour bloquer la mise en veille
 
 function toggleInputs() {
     const cat = document.getElementById('category').value;
@@ -23,6 +24,7 @@ function toggleInputs() {
     // Forcer la réinitialisation du minuteur lors du changement de catégorie
     active = false;
     clearInterval(inter);
+    releaseWakeLock();
     document.getElementById('btn').innerText = "Lancer la cuisson passive";
     document.getElementById('btn').style.background = "var(--green)";
     
@@ -43,7 +45,7 @@ function calculer() {
         const tPaquet = parseInt(document.getElementById('tempsPaquet').value) || 0;
         const item = configPates[forme];
 
-        volEau = (poids / 100) * item.ratio; // Ex: (60g / 100) * 1.5 = 0.9 Litre
+        volEau = (poids / 100) * item.ratio; 
         poidsSel = Math.round(volEau * item.sel);
         tMinutes = tPaquet + item.offset + (cass === 'legere' ? 1 : 0);
         whSaved = Math.round(item.wh * (poids / 200));
@@ -56,7 +58,7 @@ function calculer() {
         const grain = document.getElementById('typeGrain').value;
         const item = configGrains[grain];
 
-        volEau = (poids / 100) * item.ratio; // Ratio volumétrique par rapport au poids
+        volEau = (poids / 100) * item.ratio; 
         poidsSel = Math.round(volEau * item.sel);
         tMinutes = item.repos + (cass === 'legere' ? 1 : 0);
         whSaved = Math.round(item.wh * (poids / 200));
@@ -87,22 +89,88 @@ function showTime() {
     document.getElementById('disp').innerText = `${Math.floor(sec/60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}`;
 }
 
+// Empêche l'écran du téléphone de s'éteindre
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+        }
+    } catch (err) {
+        console.log(`Désolé, le blocage de veille a échoué: ${err.message}`);
+    }
+}
+
+// Relâche le blocage de veille
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release();
+        wakeLock = null;
+    }
+}
+
 function toggle() {
     const b = document.getElementById('btn');
     if (active) {
         clearInterval(inter); active = false; b.innerText = "Reprendre la cuisson"; b.style.background = "var(--green)";
+        releaseWakeLock();
     } else {
         active = true; b.innerText = "PAUSE (Cuisson en cours...)"; b.style.background = "var(--red)";
+        requestWakeLock(); // Activer le maintien de l'écran allumé
+        
         inter = setInterval(() => {
             sec--; showTime();
             if (sec <= 0) {
                 clearInterval(inter); active = false; b.innerText = "Terminé !"; b.style.background = "#34495e";
-                try { new (window.AudioContext || window.webkitAudioContext)().createOscillator().connect(new AudioContext().destination); } catch(e){}
-                alert("⏰ BastaWatts : Cuisson passive terminée ! Servez ou égouttez immédiatement.");
-                calculer();
+                releaseWakeLock();
+                declencherAlerteVocale();
             }
         }, 1000);
     }
 }
 
+// Nouvelle fonction d'alerte sonore ET vocale (Text-To-Speech)
+function declencherAlerteVocale() {
+    const cat = document.getElementById('category').value;
+    let nomAliment = "votre préparation";
+    
+    if (cat === 'pates') {
+        nomAliment = "les pâtes";
+    } else {
+        const grain = document.getElementById('typeGrain').value;
+        if(grain.startsWith('riz')) nomAliment = "le riz";
+        if(grain === 'quinoa') nomAliment = "le quinoa";
+        if(grain === 'boulgour') nomAliment = "le boulgour";
+    }
+
+    // 1. Déclenchement d'un Bip Sonore d'alarme électronique (Haute fréquence)
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Note Ré5 incisive
+        gainNode.gain.setValueAtTime(0.6, audioCtx.currentTime);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.4);
+    } catch(e) { console.log("Audio Context bloqué ou non supporté."); }
+
+    // 2. Lecture à voix haute (Synthèse vocale après 0,5 seconde)
+    setTimeout(() => {
+        if ('speechSynthesis' in window) {
+            const message = new SpeechSynthesisUtterance();
+            message.text = `Attention, la cuisson passive pour ${nomAliment} est terminée. Je répète, la cuisson est terminée. Veuillez égoutter ou servir immédiatement pour stopper l'hydratation de l'amidon.`;
+            message.lang = 'fr-FR';
+            message.rate = 1.0; // Vitesse normale
+            message.pitch = 1.1; // Ton de voix légèrement alertant
+            window.speechSynthesis.speak(message);
+        } else {
+            alert(`⏰ BastaWatts : Cuisson passive terminée pour ${nomAliment} ! Égouttez vite.`);
+        }
+        calculer();
+    }, 500);
+}
+
 window.onload = calculer;
+
