@@ -32,24 +32,24 @@ function toggleInputs() {
 
 function calculer() {
     const cat = document.getElementById('category').value;
-    const poids = Math,max(0, parseFloat(document.getElementById('poids').value) || 0;
-    const cass = document.getElementById('casserole').value) || 0);
+    const poids = Math.max(0, parseFloat(document.getElementById('poids').value) || 0);
+    const cass = document.getElementById('casserole').value;
     const alt = parseInt(document.getElementById('altitude').value);
     const tarifKwh = parseFloat(document.getElementById('tarifKwh').value) || 0.25;
     const stepList = document.getElementById('prepSteps');
-    
+
     let volEau = 0; let poidsSel = 0; let tMinutes = 0; let whSaved = 0;
-    let extraBoil = alt === 1000 ? 1 : (alt === 2000 ? 2 : 0); 
-    stepList.innerHTML = ""; 
+    let extraBoil = alt === 1000 ? 1 : (alt === 2000 ? 2 : 0);
+    stepList.innerHTML = "";
 
     if (cat === 'pates') {
         const forme = document.getElementById('formePates').value;
         const tPaquet = parseInt(document.getElementById('tempsPaquet').value) || 0;
         const item = configPates[forme];
 
-        volEau = (poids / 100) * item.ratio; 
+        volEau = (poids / 100) * item.ratio;
         poidsSel = Math.round(volEau * item.sel);
-        tMinutes = Math, max(0,tPaquet + item.offset + (cass === 'legere' ? 1 : 0) - extraBoil);
+        tMinutes = Math.max(0, tPaquet + item.offset + (cass === 'legere' ? 1 : 0) - extraBoil);
         whSaved = Math.round(item.wh * (poids / 200)) - (extraBoil * 15);
 
         stepList.innerHTML += `<li>Mettre ${volEau.toFixed(2)}L d'eau et ${poidsSel}g de sel dans la casserole.</li>`;
@@ -62,11 +62,11 @@ function calculer() {
         stepList.innerHTML += `<li>Mettez impérativement un <strong>COUVERCLE hermétique</strong> et <strong>COUPEZ LE FEU</strong>.</li>`;
     } else {
         const grain = cat === 'riz'
-        ? document.getElementById('typeRiz').value;
-          ? document.getElementById('typeCereale').value;
+            ? document.getElementById('typeRiz').value
+            : document.getElementById('typeCereale').value;
         const item = configGrains[grain];
 
-        volEau = (poids / 100) * item.ratio; 
+        volEau = (poids / 100) * item.ratio;
         poidsSel = Math.round(volEau * item.sel);
         let totalEbullition = item.ebullition + extraBoil;
         tMinutes = item.repos + (cass === 'legere' ? 1 : 0);
@@ -87,9 +87,9 @@ function calculer() {
     document.getElementById('ecoWh').innerText = Math.max(0, whSaved);
     document.getElementById('ecoEur').innerText = (Math.max(0, whSaved) * (tarifKwh / 1000)).toFixed(2);
 
-    if (!active) { 
-        sec = tMinutes * 60; 
-        showTime(); 
+    if (!active) {
+        sec = tMinutes * 60;
+        showTime();
     }
 }
 
