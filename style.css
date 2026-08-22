@@ -36,8 +36,8 @@ h1 {
 .group { 
     margin-bottom: 12px; 
 }
-.row-flex { display: flex; gap: 12px; }
-.row-flex > div { flex: 2; }
+.row-flex { display: flex; gap: 18px; }
+.row-flex > div { flex: 1; }
 label { 
     display: block; 
     font-weight: bold; 
