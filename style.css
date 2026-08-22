@@ -37,7 +37,7 @@ h1 {
     margin-bottom: 12px; 
 }
 .row-flex { display: flex; gap: 12px; }
-.row-flex > div { flex: 1; }
+.row-flex > div { flex: 2; }
 label { 
     display: block; 
     font-weight: bold; 
