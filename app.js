@@ -193,7 +193,7 @@ function declencherAlerteVocale() {
         } else {
             alert(`⏰ Cuisson passive terminée pour ${nomAliment} !`);
         }
-        calculer();
+        //calculer();
     }, 500);
 }
 document.addEventListener('visibilitychange', () => {
