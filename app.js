@@ -2,6 +2,9 @@
 const gCO2ParKwh = 60; // ajuster selon mix électrique local (France ~60g, moyenne UE ~250g)
 let sessionWh = 0, sessionEur = 0;
 let endTimestamp = null, audioCtx = null;
+// Ajoutez cette ligne sous vos variables globales existantes :
+let phaseCuisson = "active"; // "active" ou "passive"
+
 const configPates = {
     fines:     { ratio: 1.5, sel: 5, offset: 2, wh: 150 },      
     epaisses:  { ratio: 1.5, sel: 5, offset: 3, wh: 165 },   
@@ -44,55 +47,78 @@ function calculer() {
     let extraBoil = alt === 1000 ? 1 : (alt === 2000 ? 2 : 0);
     stepList.innerHTML = "";
 
-    if (cat === 'pates') {
+       if (cat === 'pates') {
         const forme = document.getElementById('formePates').value;
         const tPaquet = parseInt(document.getElementById('tempsPaquet').value) || 0;
         const item = configPates[forme];
-
         volEau = (poids / 100) * item.ratio;
         poidsSel = Math.round(volEau * item.sel);
-        tMinutes = Math.max(0, tPaquet + item.offset + (cass === 'legere' ? 1 : 0) - extraBoil);
+        
+        // MODIFICATION : Séparation des deux phases de temps en minutes
+        let tActive = extraBoil; // Ex: 0, 1 ou 2 minutes selon l'altitude
+        let tPassive = Math.max(1, tPaquet + item.offset + (cass === 'legere' ? 1 : 0) - extraBoil);
+        
         whSaved = Math.round(item.wh * (poids / 200)) - (extraBoil * 15);
-
-        stepList.innerHTML += `<li>Mettre ${volEau.toFixed(2)}L d'eau et ${poidsSel}g de sel dans la casserole.</li>`;
+        stepList.innerHTML += `<li>Mettre ${volEau.toFixed(2)}L d'eau and ${poidsSel}g de sel dans la casserole.</li>`;
         stepList.innerHTML += `<li>Porter à ébullition franche (100°C).</li>`;
+        
+        // Stockage des temps en secondes dans le HTML pour la fonction toggle()
+        document.getElementById('disp').dataset.tActive = tActive * 60;
+        document.getElementById('disp').dataset.tPassive = tPassive * 60;
+
         if (extraBoil > 0) {
             stepList.innerHTML += `<li>Jeter les pâtes. ⚠️ Altitude : <strong>Laisser bouillir activement ${extraBoil} minute(s)</strong> avant de couper le feu.</li>`;
         } else {
             stepList.innerHTML += `<li>Jeter les pâtes, remuer 30 secondes pour bloquer l'amidon en surface.</li>`;
         }
-        stepList.innerHTML += `<li>Mettez impérativement un <strong>COUVERCLE hermétique</strong> et <strong>COUPEZ LE FEU</strong>.</li>`;
+        stepList.innerHTML += `<li>Mettez impérativement un <strong>COUVERCLE hermétique</strong> and <strong>COUPEZ LE FEU</strong>.</li>`;
     } else {
+        // Gestion dynamique de toutes les autres catégories (riz, céréales, grains...)
         const grain = cat === 'riz'
             ? document.getElementById('typeRiz').value
             : document.getElementById('typeCereale').value;
         const item = configGrains[grain];
-
+        
         volEau = (poids / 100) * item.ratio;
         poidsSel = Math.round(volEau * item.sel);
-        let totalEbullition = item.ebullition + extraBoil;
-        tMinutes = item.repos + (cass === 'legere' ? 1 : 0);
         whSaved = Math.round(item.wh * (poids / 200)) - (extraBoil * 15);
-
+        
+        // MODIFICATION : Séparation des deux phases de temps en minutes
+        let tActive = item.ebullition + extraBoil;
+        let tPassive = item.repos + (cass === 'legere' ? 1 : 0);
+        
+        // Stockage des temps en secondes dans le HTML pour la fonction toggle()
+        document.getElementById('disp').dataset.tActive = tActive * 60;
+        document.getElementById('disp').dataset.tPassive = tPassive * 60;
+        
         stepList.innerHTML += `<li><strong>Préparation :</strong> ${item.prep}</li>`;
         stepList.innerHTML += `<li>${item.methode} (Eau : ${volEau.toFixed(2)}L, Sel : ${poidsSel}g).</li>`;
-        if (totalEbullition > 0) {
-            stepList.innerHTML += `<li>Laisser bouillir sur l'induction pendant exactement <strong>${totalEbullition} minutes</strong> sous couvercle.</li>`;
+        
+        if (tActive > 0) {
+            stepList.innerHTML += `<li>Laisser bouillir sur l'induction pendant exactement <strong>${tActive} minutes</strong> sous couvercle.</li>`;
         } else {
             stepList.innerHTML += `<li>Dès l'ébullition de l'eau atteinte, jeter le grain.</li>`;
         }
         stepList.innerHTML += `<li><strong>COUPEZ LE FEU</strong>, gardez le couvercle fermé. Le grain va absorber l'eau.</li>`;
     }
-
+    
+    // Mise à jour de l'affichage des constantes d'économie et d'eau
     document.getElementById('eau').innerText = volEau.toFixed(2);
     document.getElementById('sel').innerText = poidsSel;
     document.getElementById('ecoWh').innerText = Math.max(0, whSaved);
     document.getElementById('ecoEur').innerText = (Math.max(0, whSaved) * (tarifKwh / 1000)).toFixed(2);
-
+    
+    // Initialisation automatique du premier décompte si la cuisson n'est pas déjà démarrée
     if (!active) {
-        sec = tMinutes * 60;
+        let actSec = parseInt(document.getElementById('disp').dataset.tActive) || 0;
+        let pasSec = parseInt(document.getElementById('disp').dataset.tPassive) || 0;
+        
+        // S'il y a un temps actif (ébullition), on commence par lui, sinon on passe directement au passif
+        sec = actSec > 0 ? actSec : pasSec;
+        phaseCuisson = actSec > 0 ? "active" : "passive";
         showTime();
     }
+
 }
 
 function showTime() {
@@ -129,38 +155,86 @@ function tick() {
     const remaining = Math.round((endTimestamp - Date.now()) / 1000);
     sec = Math.max(0, remaining);
     showTime();
+    
     if (remaining <= 0) {
-        clearInterval(inter); active = false;
-        const b = document.getElementById('btn');
-        b.innerText = "Terminé !"; b.style.background = "#34495e";
-        releaseWakeLock();
-        localStorage.removeItem('pastawatts_end');
-        const co2 = sessionWh * gCO2ParKwh / 1000;
-const totals = JSON.parse(localStorage.getItem('pastawatts_totals') || '{"wh":0,"eur":0,"co2":0}');
-totals.wh += sessionWh; totals.eur += sessionEur; totals.co2 += co2;
-localStorage.setItem('pastawatts_totals', JSON.stringify(totals));
-displayTotals(totals);
-        declencherAlerteVocale();
+        if (phaseCuisson === "active") {
+            // TRANSITION : La phase active est finie, on passe à la phase passive
+            phaseCuisson = "passive";
+            localStorage.setItem('pastawatts_phase', phaseCuisson);
+            
+            sec = parseInt(document.getElementById('disp').dataset.tPassive) || 0;
+            endTimestamp = Date.now() + sec * 1000;
+            localStorage.setItem('pastawatts_end', endTimestamp);
+            
+            const b = document.getElementById('btn');
+            b.innerText = "CUISSON PASSIVE (Hors du feu)...";
+            
+            // Alerte sonore rapide pour dire de couper le feu
+            AlerteIntermediaire(); 
+        } else {
+            // FIN FINALE : La phase passive est terminée
+            clearInterval(inter); active = false;
+            const b = document.getElementById('btn');
+            b.innerText = "Terminé !"; b.style.background = "#34495e";
+            releaseWakeLock();
+            localStorage.removeItem('pastawatts_end');
+            localStorage.removeItem('pastawatts_phase');
+            
+            const co2 = sessionWh * gCO2ParKwh / 1000;
+            const totals = JSON.parse(localStorage.getItem('pastawatts_totals') || '{"wh":0,"eur":0,"co2":0}');
+            totals.wh += sessionWh; totals.eur += sessionEur; totals.co2 += co2;
+            localStorage.setItem('pastawatts_totals', JSON.stringify(totals));
+            displayTotals(totals);
+            declencherAlerteVocale();
+        }
     }
 }
 
+// Petite fonction audio d'aide à ajouter pour la transition
+function AlerteIntermediaire() {
+    try {
+        if ('speechSynthesis' in window) {
+            const msg = new SpeechSynthesisUtterance("Ébullition terminée. Coupez le feu et mettez le couvercle.");
+            msg.lang = 'fr-FR'; window.speechSynthesis.speak(msg);
+        }
+    } catch(e){}
+}
+
+
 function toggle() {
+    demanderPermissionNotifications();
     const b = document.getElementById('btn');
     if (active) {
         clearInterval(inter); active = false;
         b.innerText = "Reprendre la cuisson"; b.style.background = "var(--green)";
         releaseWakeLock();
         localStorage.removeItem('pastawatts_end');
+        localStorage.removeItem('pastawatts_phase');
     } else {
         if (!audioCtx) {
             try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
         }
-        active = true; b.innerText = "PAUSE (Cuisson en cours...)"; b.style.background = "var(--red)";
+        active = true;
+        
+        let actSec = parseInt(document.getElementById('disp').dataset.tActive) || 0;
+        // Si aucun temps actif (altitude 0), on commence directement en passif
+        if (sec === 0 || (!localStorage.getItem('pastawatts_end') && actSec === 0)) {
+            phaseCuisson = "passive";
+            sec = parseInt(document.getElementById('disp').dataset.tPassive) || 0;
+        }
+        
+        b.innerText = phaseCuisson === "active" ? "ÉBULLITION ACTIVE..." : "CUISSON PASSIVE (Hors du feu)...";
+        b.style.background = "var(--red)";
         requestWakeLock();
+        
         sessionWh = parseFloat(document.getElementById('ecoWh').innerText) || 0;
-sessionEur = parseFloat(document.getElementById('ecoEur').innerText) || 0;
+        sessionEur = parseFloat(document.getElementById('ecoEur').innerText) || 0;
+        
         endTimestamp = Date.now() + sec * 1000;
         localStorage.setItem('pastawatts_end', endTimestamp);
+        localStorage.setItem('pastawatts_phase', phaseCuisson);
+        
+        clearInterval(inter);
         inter = setInterval(tick, 1000);
     }
 }
@@ -196,11 +270,60 @@ function declencherAlerteVocale() {
         calculer();
     }, 500);
 }
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && active && wakeLock === null) {
-        requestWakeLock();
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible') {
+        if (active && wakeLock === null) {
+            await requestWakeLock();
+        }
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'ANNULER_ALERTE' });
+        }
+        
+        // Rattrapage à la réouverture (gère si les deux phases ont expiré en tâche de fond)
+        const savedEnd = localStorage.getItem('pastawatts_end');
+        const savedPhase = localStorage.getItem('pastawatts_phase');
+        if (savedEnd && savedPhase) {
+            phaseCuisson = savedPhase;
+            endTimestamp = parseInt(savedEnd, 10);
+            let remaining = Math.round((endTimestamp - Date.now()) / 1000);
+            
+            if (remaining <= 0 && active) {
+                // Si la phase active a expiré en arrière-plan, tick() effectuera la bascule ou la fin
+                tick();
+            }
+        }
+    } 
+    else if (document.visibilityState === 'hidden' && active) {
+        const savedEnd = localStorage.getItem('pastawatts_end');
+        if (savedEnd) {
+            const tempsRestantMs = parseInt(savedEnd, 10) - Date.now();
+            
+            if (tempsRestantMs > 0 && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                const cat = document.getElementById('category').value;
+                let nomAliment = cat === 'pates' ? 'vos pâtes' : (cat === 'riz' ? 'votre riz' : 'vos céréales');
+                
+                let titreNotif = "";
+                let texteNotif = "";
+                
+                if (phaseCuisson === "active") {
+                    titreNotif = "⚠️ COUPEZ LE FEU !";
+                    texteNotif = `L'ébullition active est finie pour ${nomAliment}. Coupez le feu et mettez le couvercle.`;
+                } else {
+                    titreNotif = "⏰ Cuisson Terminée !";
+                    texteNotif = `La cuisson passive est terminée pour ${nomAliment}. Servez ou égouttez.`;
+                }
+                
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PROGRAMMER_ALERTE',
+                    delaiMs: tempsRestantMs,
+                    titre: titreNotif,
+                    message: texteNotif
+                });
+            }
+        }
     }
 });
+
 function displayTotals(totals) {
     totals = totals || JSON.parse(localStorage.getItem('pastawatts_totals') || '{"wh":0,"eur":0,"co2":0}');
     document.getElementById('totalWh').innerText = Math.round(totals.wh);
@@ -216,19 +339,26 @@ function resetTotals() {
 window.onload = () => {
     displayTotals();
     calculer();
+       // ... (Dans votre fonction window.onload, remplacez la section de reprise par celle-ci) ...
     const savedEnd = localStorage.getItem('pastawatts_end');
+    const savedPhase = localStorage.getItem('pastawatts_phase');
     if (savedEnd) {
         endTimestamp = parseInt(savedEnd, 10);
+        phaseCuisson = savedPhase || "passive";
         const remaining = Math.round((endTimestamp - Date.now()) / 1000);
         if (remaining > 0) {
-            sec = remaining; showTime();
+            sec = remaining; 
+            showTime();
             active = true;
             const b = document.getElementById('btn');
-            b.innerText = "PAUSE (Cuisson en cours...)"; b.style.background = "var(--red)";
+            b.innerText = phaseCuisson === "active" ? "ÉBULLITION ACTIVE..." : "CUISSON PASSIVE (Hors du feu)..."; 
+            b.style.background = "var(--red)";
             requestWakeLock();
+            clearInterval(inter);
             inter = setInterval(tick, 1000);
         } else {
             localStorage.removeItem('pastawatts_end');
+            localStorage.removeItem('pastawatts_phase');
         }
     }
 };
