@@ -326,18 +326,15 @@ function resetTotals() {
 window.onload = () => {
     displayTotals();
     calculer();
-     // ==========================================
-    // AJOUT 1 : Enregistrement du Service Worker (sw.js)
-    // ==========================================
+    
+    // 1. Enregistrement du Service Worker (sw.js)
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
             .then(reg => console.log('Service Worker enregistré avec succès !', reg.scope))
             .catch(err => console.error('Échec de l\'enregistrement du Service Worker :', err));
     }
-
-    // ==========================================
-    // AJOUT 2 : Demande d'autorisation pour les notifications
-    // ==========================================
+    
+    // 2. Demande d'autorisation pour les notifications
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
@@ -345,27 +342,36 @@ window.onload = () => {
             }
         });
     }
-       // ... (Dans votre fonction window.onload, remplacez la section de reprise par celle-ci) ...
+    
+    // 3. Reprise d'un minuteur existant en arrière-plan / stockage local
     const savedEnd = localStorage.getItem('pastawatts_end');
     const savedPhase = localStorage.getItem('pastawatts_phase');
+    const b = document.getElementById('btn');
+    
     if (savedEnd) {
         endTimestamp = parseInt(savedEnd, 10);
         phaseCuisson = savedPhase || "passive";
         const remaining = Math.round((endTimestamp - Date.now()) / 1000);
+        
         if (remaining > 0) {
             sec = remaining; 
             showTime();
             active = true;
-            const b = document.getElementById('btn');
             b.innerText = phaseCuisson === "active" ? "ÉBULLITION ACTIVE..." : "CUISSON PASSIVE (Hors du feu)..."; 
             b.style.background = "var(--red)";
             requestWakeLock();
             clearInterval(inter);
             inter = setInterval(tick, 1000);
         } else {
+            // Nettoyage si le temps est expiré
             localStorage.removeItem('pastawatts_end');
             localStorage.removeItem('pastawatts_phase');
+            b.innerText = "Lancer la cuisson passive";
+            b.style.background = "var(--green)";
         }
+    } else {
+        // État par défaut si aucune cuisson n'est enregistrée
+        b.innerText = "Lancer la cuisson passive";
+        b.style.background = "var(--green)";
     }
 };
-
