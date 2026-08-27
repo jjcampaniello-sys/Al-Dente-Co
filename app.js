@@ -200,7 +200,11 @@ function AlerteIntermediaire() {
     } catch(e){}
 }
 
-
+function demanderPermissionNotifications() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+}
 function toggle() {
     demanderPermissionNotifications();
     const b = document.getElementById('btn');
