@@ -326,6 +326,25 @@ function resetTotals() {
 window.onload = () => {
     displayTotals();
     calculer();
+     // ==========================================
+    // AJOUT 1 : Enregistrement du Service Worker (sw.js)
+    // ==========================================
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker enregistré avec succès !', reg.scope))
+            .catch(err => console.error('Échec de l\'enregistrement du Service Worker :', err));
+    }
+
+    // ==========================================
+    // AJOUT 2 : Demande d'autorisation pour les notifications
+    // ==========================================
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('Notifications système autorisées par l\'utilisateur.');
+            }
+        });
+    }
        // ... (Dans votre fonction window.onload, remplacez la section de reprise par celle-ci) ...
     const savedEnd = localStorage.getItem('pastawatts_end');
     const savedPhase = localStorage.getItem('pastawatts_phase');
