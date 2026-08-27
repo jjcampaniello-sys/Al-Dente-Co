@@ -1,4 +1,4 @@
-const CACHE_NAME = 'PastaWatts-v3'; //
+const CACHE_NAME = 'PastaWatts-v4'; //
 const ASSETS_TO_CACHE = [ //
   './', //
   './index.html', //
@@ -67,10 +67,12 @@ self.addEventListener('message', (event) => {
         icon: './icon.svg', // Utilisation de votre icône présente dans le cache
         vibrate:[200, 100, 200], // Séquence de vibrations pour attirer l'attention
         requireInteraction: true // La notification reste à l'écran tant que l'utilisateur ne clique pas dessus
+       tag: 'fin-cuisson-pastawatts', // AJOUT : Évite les doublons de notifications
+        renotify: true,              // AJOUT : Fait vibrer le téléphone même si une ancienne notif existe
+        data: { url: './' }          // AJOUT : Permet de rouvrir l'application au clic
       });
       minuteurCuisson = null;
     }, delaiMs);
-    
     console.log(`Alerte programmée dans ${Math.round(delaiMs / 1000)} secondes.`);
   }
 });
