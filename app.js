@@ -21,19 +21,6 @@ const configGrains = {
 
 let sec = 0, active = false, inter = null, wakeLock = null;
 
-function toggleInputs() {
-    const cat = document.getElementById('category').value;
-    document.getElementById('pates-options').style.display = (cat === 'pates') ? 'block' : 'none';
-    document.getElementById('grains-options').style.display = (cat !== 'pates') ? 'block' : 'none';
-    
-    active = false;
-    clearInterval(inter);
-    releaseWakeLock();
-    document.getElementById('btn').innerText = "Lancer la cuisson passive";
-    document.getElementById('btn').style.background = "var(--green)";
-    
-    calculer();
-}
 
 function calculer() {
     const cat = document.getElementById('category').value;
@@ -119,10 +106,6 @@ function calculer() {
         showTime();
     }
 
-}
-
-function showTime() {
-    document.getElementById('disp').innerText = `${Math.floor(sec/60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}`;
 }
 
 async function requestWakeLock() {
