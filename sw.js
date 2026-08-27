@@ -42,39 +42,35 @@ self.addEventListener('fetch', (event) => { //
 // ==========================================
 // AJOUT : Gestionnaire de minuteur en tâche de fond
 // ==========================================
-let minuteurCuisson = null;
+let minuteursCuisson = [];
 
 self.addEventListener('message', (event) => {
-  // Sécurité : on annule un éventuel minuteur existant si l'utilisateur change d'avis ou revient sur l'appli
   if (event.data && event.data.type === 'ANNULER_ALERTE') {
-    if (minuteurCuisson) {
-      clearTimeout(minuteurCuisson);
-      minuteurCuisson = null;
-      console.log("Alerte arrière-plan annulée.");
-    }
+    minuteursCuisson.forEach(id => clearTimeout(id));
+    minuteursCuisson = [];
+    console.log("Alertes arrière-plan annulées.");
   }
 
-  // Programmation de l'alerte
-  if (event.data && event.data.type === 'PROGRAMMER_ALERTE') {
-    const { delaiMs, message, titre } = event.data;
-    
-    if (minuteurCuisson) clearTimeout(minuteurCuisson);
-    
-    // Le navigateur maintient ce setTimeout car il cible directement une notification système
-    minuteurCuisson = setTimeout(() => {
-      self.registration.showNotification(titre, {
-        body: message,
-           // CORRECTION IMMÉDIATE : Remplacer le .svg par le .png
-        icon: './icon-192.png',  
-        badge: './icon-192.png', 
-        vibrate:[200, 100, 200, 100, 400], // Séquence de vibrations pour attirer l'attention
-        requireInteraction: true, // La notification reste à l'écran tant que l'utilisateur ne clique pas dessus
-       tag: 'fin-cuisson-pastawatts', // AJOUT : Évite les doublons de notifications
-        renotify: true,              // AJOUT : Fait vibrer le téléphone même si une ancienne notif existe
-        data: { url: './' }          // AJOUT : Permet de rouvrir l'application au clic
-      });
-      minuteurCuisson = null;
-    }, delaiMs);
-    console.log(`Alerte programmée dans ${Math.round(delaiMs / 1000)} secondes.`);
+  if (event.data && event.data.type === 'PROGRAMMER_ALERTES') {
+    minuteursCuisson.forEach(id => clearTimeout(id));
+    minuteursCuisson = [];
+
+    event.data.alertes.forEach(alerte => {
+      const id = setTimeout(() => {
+        self.registration.showNotification(alerte.titre, {
+          body: alerte.message,
+          icon: './icon-192.png',
+          badge: './icon-192.png',
+          vibrate: [200, 100, 200, 100, 400],
+          requireInteraction: true,
+          tag: 'fin-cuisson-pastawatts',
+          renotify: true,
+          data: { url: './' }
+        });
+      }, alerte.delaiMs);
+      minuteursCuisson.push(id);
+    });
+
+    console.log(`${event.data.alertes.length} alerte(s) programmée(s).`);
   }
 });
