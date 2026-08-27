@@ -1,4 +1,6 @@
 
+const gCO2ParKwh = 60; // ajuster selon mix électrique local (France ~60g, moyenne UE ~250g)
+let sessionWh = 0, sessionEur = 0;
 let endTimestamp = null, audioCtx = null;
 const configPates = {
     fines:     { ratio: 1.5, sel: 5, offset: 2, wh: 150 },      
@@ -133,6 +135,11 @@ function tick() {
         b.innerText = "Terminé !"; b.style.background = "#34495e";
         releaseWakeLock();
         localStorage.removeItem('pastawatts_end');
+        const co2 = sessionWh * gCO2ParKwh / 1000;
+const totals = JSON.parse(localStorage.getItem('pastawatts_totals') || '{"wh":0,"eur":0,"co2":0}');
+totals.wh += sessionWh; totals.eur += sessionEur; totals.co2 += co2;
+localStorage.setItem('pastawatts_totals', JSON.stringify(totals));
+displayTotals(totals);
         declencherAlerteVocale();
     }
 }
@@ -150,6 +157,8 @@ function toggle() {
         }
         active = true; b.innerText = "PAUSE (Cuisson en cours...)"; b.style.background = "var(--red)";
         requestWakeLock();
+        sessionWh = parseFloat(document.getElementById('ecoWh').innerText) || 0;
+sessionEur = parseFloat(document.getElementById('ecoEur').innerText) || 0;
         endTimestamp = Date.now() + sec * 1000;
         localStorage.setItem('pastawatts_end', endTimestamp);
         inter = setInterval(tick, 1000);
@@ -192,8 +201,20 @@ document.addEventListener('visibilitychange', () => {
         requestWakeLock();
     }
 });
-
+function displayTotals(totals) {
+    totals = totals || JSON.parse(localStorage.getItem('pastawatts_totals') || '{"wh":0,"eur":0,"co2":0}');
+    document.getElementById('totalWh').innerText = Math.round(totals.wh);
+    document.getElementById('totalEur').innerText = totals.eur.toFixed(2);
+    document.getElementById('totalCo2').innerText = Math.round(totals.co2);
+}
+function resetTotals() {
+    if (confirm("Réinitialiser le cumul des économies ?")) {
+        localStorage.removeItem('pastawatts_totals');
+        displayTotals();
+    }
+}
 window.onload = () => {
+    displayTotals();
     calculer();
     const savedEnd = localStorage.getItem('pastawatts_end');
     if (savedEnd) {
