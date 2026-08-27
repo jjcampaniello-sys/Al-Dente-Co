@@ -5,7 +5,7 @@ const ASSETS_TO_CACHE = [ //
   './readme.html', //
   './app.js', //
   './manifest.json', //
-  './icon.svg'//
+  './icon-192.png'//
 ]; //
 
 // Installation du Service Worker
@@ -68,7 +68,7 @@ self.addEventListener('message', (event) => {
         icon: './icon-192.png',  
         badge: './icon-192.png', 
         vibrate:[200, 100, 200, 100, 400], // Séquence de vibrations pour attirer l'attention
-        requireInteraction: true // La notification reste à l'écran tant que l'utilisateur ne clique pas dessus
+        requireInteraction: true, // La notification reste à l'écran tant que l'utilisateur ne clique pas dessus
        tag: 'fin-cuisson-pastawatts', // AJOUT : Évite les doublons de notifications
         renotify: true,              // AJOUT : Fait vibrer le téléphone même si une ancienne notif existe
         data: { url: './' }          // AJOUT : Permet de rouvrir l'application au clic
