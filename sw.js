@@ -64,7 +64,9 @@ self.addEventListener('message', (event) => {
     minuteurCuisson = setTimeout(() => {
       self.registration.showNotification(titre, {
         body: message,
-        icon: './icon.svg', // Utilisation de votre icône présente dans le cache
+           // CORRECTION IMMÉDIATE : Remplacer le .svg par le .png
+        icon: './icon-192.png',  
+        badge: './icon-192.png', 
         vibrate:[200, 100, 200, 100, 400], // Séquence de vibrations pour attirer l'attention
         requireInteraction: true // La notification reste à l'écran tant que l'utilisateur ne clique pas dessus
        tag: 'fin-cuisson-pastawatts', // AJOUT : Évite les doublons de notifications
