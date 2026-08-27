@@ -109,7 +109,11 @@ function calculer() {
 }
 
 async function requestWakeLock() {
-    try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+    try { 
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen'); // Paramètre "screen" ajouté
+        } 
+    } catch (err) {}
 }
 
 function releaseWakeLock() {
