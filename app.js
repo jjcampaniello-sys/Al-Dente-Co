@@ -351,15 +351,6 @@ window.onload = () => {
             .catch(err => console.error('Échec de l\'enregistrement du Service Worker :', err));
     }
     
-    // 2. Demande d'autorisation pour les notifications
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('Notifications système autorisées par l\'utilisateur.');
-            }
-        });
-    }
-    
     // 3. Reprise d'un minuteur existant en arrière-plan / stockage local
     const savedEnd = localStorage.getItem('pastawatts_end');
     const savedPhase = localStorage.getItem('pastawatts_phase');
