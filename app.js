@@ -291,29 +291,37 @@ document.addEventListener('visibilitychange', async () => {
     } 
     else if (document.visibilityState === 'hidden' && active) {
         const savedEnd = localStorage.getItem('pastawatts_end');
-        if (savedEnd) {
-            const tempsRestantMs = parseInt(savedEnd, 10) - Date.now();
-            
-            if (tempsRestantMs > 0 && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                const cat = document.getElementById('category').value;
-                let nomAliment = cat === 'pates' ? 'vos pâtes' : (cat === 'riz' ? 'votre riz' : 'vos céréales');
-                
-                let titreNotif = "";
-                let texteNotif = "";
-                
+        if (savedEnd && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            const tempsActifRestantMs = parseInt(savedEnd, 10) - Date.now();
+            const cat = document.getElementById('category').value;
+            let nomAliment = cat === 'pates' ? 'vos pâtes' : (cat === 'riz' ? 'votre riz' : 'vos céréales');
+
+            if (tempsActifRestantMs > 0) {
+                let alertes = [];
+
                 if (phaseCuisson === "active") {
-                    titreNotif = "⚠️ COUPEZ LE FEU !";
-                    texteNotif = `L'ébullition active est finie pour ${nomAliment}. Coupez le feu et mettez le couvercle.`;
+                    alertes.push({
+                        delaiMs: tempsActifRestantMs,
+                        titre: "⚠️ COUPEZ LE FEU !",
+                        message: `L'ébullition active est finie pour ${nomAliment}. Coupez le feu et mettez le couvercle.`
+                    });
+                    const tPassiveSec = parseInt(document.getElementById('disp').dataset.tPassive) || 0;
+                    alertes.push({
+                        delaiMs: tempsActifRestantMs + (tPassiveSec * 1000),
+                        titre: "⏰ Cuisson Terminée !",
+                        message: `La cuisson passive est terminée pour ${nomAliment}. Servez ou égouttez.`
+                    });
                 } else {
-                    titreNotif = "⏰ Cuisson Terminée !";
-                    texteNotif = `La cuisson passive est terminée pour ${nomAliment}. Servez ou égouttez.`;
+                    alertes.push({
+                        delaiMs: tempsActifRestantMs,
+                        titre: "⏰ Cuisson Terminée !",
+                        message: `La cuisson passive est terminée pour ${nomAliment}. Servez ou égouttez.`
+                    });
                 }
-                
+
                 navigator.serviceWorker.controller.postMessage({
-                    type: 'PROGRAMMER_ALERTE',
-                    delaiMs: tempsRestantMs,
-                    titre: titreNotif,
-                    message: texteNotif
+                    type: 'PROGRAMMER_ALERTES',
+                    alertes: alertes
                 });
             }
         }
