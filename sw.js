@@ -1,12 +1,11 @@
-const CACHE_NAME = 'PastaWatts-v2'; //
+const CACHE_NAME = 'PastaWatts-v3'; //
 const ASSETS_TO_CACHE = [ //
   './', //
   './index.html', //
   './readme.html', //
   './app.js', //
   './manifest.json', //
-  './icon-192.png', //
-  './icon-512.png' //
+  './icon.svg'//
 ]; //
 
 // Installation du Service Worker
@@ -65,8 +64,8 @@ self.addEventListener('message', (event) => {
     minuteurCuisson = setTimeout(() => {
       self.registration.showNotification(titre, {
         body: message,
-        icon: './icon-192.png', // Utilisation de votre icône présente dans le cache
-        vibrate:, // Séquence de vibrations pour attirer l'attention
+        icon: './icon.svg', // Utilisation de votre icône présente dans le cache
+        vibrate:[200, 100, 200], // Séquence de vibrations pour attirer l'attention
         requireInteraction: true // La notification reste à l'écran tant que l'utilisateur ne clique pas dessus
       });
       minuteurCuisson = null;
