@@ -184,8 +184,12 @@ function AlerteIntermediaire() {
 }
 
 function demanderPermissionNotifications() {
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
+    if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log("Notifications autorisées !");
+            }
+        });
     }
 }
 function toggle() {
