@@ -1,4 +1,4 @@
-const CACHE_NAME = 'PastaWatts-v7'; //
+const CACHE_NAME = 'PastaWatts-v8'; //
 const ASSETS_TO_CACHE = [ //
   './', //
   './index.html', //
