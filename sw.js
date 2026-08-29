@@ -5,7 +5,8 @@ const ASSETS_TO_CACHE = [ //
   './readme.html', //
   './app.js', //
   './manifest.json', //
-  './icon-192.png'//
+  './icon-192.png',//
+  './icon-512.png'//
 ]; //
 
 // Installation du Service Worker
