@@ -6,9 +6,9 @@ let endTimestamp = null, audioCtx = null;
 let phaseCuisson = "active"; // "active" ou "passive"
 
 const configPates = {
-    fines:     { ratio: 1.5, sel: 5, offset: 2, wh: 150 },      
-    epaisses:  { ratio: 1.5, sel: 5, offset: 3, wh: 165 },   
-    completes: { ratio: 1.5, sel: 5, offset: 5, wh: 180 }
+    fines:     { ratio: 0.9, sel: 5, offset: 3, wh: 150 },      
+    epaisses:  { ratio: 0.9, sel: 5, offset: 4, wh: 165 },   
+    completes: { ratio: 0.9, sel: 5, offset: 6, wh: 180 }
 };
 
 const configGrains = {
